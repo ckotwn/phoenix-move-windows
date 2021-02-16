@@ -1,10 +1,12 @@
 const axes = {
-  x: { start: 'left', end: 'right' },
-  y: { start: 'top', end: 'bottom' }
+  x: {start: 'left', end: 'right'},
+  y: {start: 'top', end: 'bottom'}
 };
 
-function looseEquals(arg1: number, arg2: number, epsilon: number = 0.01) : boolean {
-  if (arg1 === arg2) { return true; }
+function looseEquals(arg1: number, arg2: number, epsilon: number = 0.01): boolean {
+  if (arg1 === arg2) {
+    return true;
+  }
   const arg1m = Math.abs(arg1);
   const arg2m = Math.abs(arg2);
   const averagem = (arg1m + arg2m / 2.0);
@@ -21,8 +23,9 @@ function looseEquals(arg1: number, arg2: number, epsilon: number = 0.01) : boole
   // 2, 2, 2, 4
   // 4 < 0.04 is false
 }
+
 // Classes
-function centerWindow(screenFrame: Rectangle, windowFrame: Rectangle) : Point {
+function centerWindow(screenFrame: Rectangle, windowFrame: Rectangle): Point {
   const x = screenFrame.x + (screenFrame.width - windowFrame.width) / 2.0;
   const y = screenFrame.y + (screenFrame.height - windowFrame.height) / 2.0;
   return {x, y};
@@ -32,20 +35,24 @@ class Logger {
   _enabled: boolean;
   _indent: number;
   _indentString: string;
+
   constructor(loggingEnabled = true, indent = 4) {
     this._enabled = loggingEnabled;
     this.setIndent(indent);
   }
+
   setIndent(indent: number) {
     this._indent = indent;
     // @ts-ignore
     this._indentString = _.repeat(' ', indent);
   }
+
   async log(...output: any[]) {
     if (this._enabled) {
       Phoenix.log(...output);
     }
   }
+
   async logIndent(level: number, message: string, ...output: any[]) {
     if (this._enabled) {
       // @ts-ignore
@@ -53,10 +60,12 @@ class Logger {
       Phoenix.log(message, ...output);
     }
   }
+
   set enabled(value: boolean) {
     this._enabled = value;
   }
-  get enabled() : boolean {
+
+  get enabled(): boolean {
     return this._enabled
   }
 }
@@ -79,6 +88,7 @@ class WindowBinding {
   screen: number;
   space: number;
   frame: Rectangle;
+
   constructor(appId: string, screen = 0, space = 0, frame?: Rectangle) {
     if (appId === null || appId === undefined || appId.constructor.name !== 'String' || appId === '') {
       throw 'appId must be a non-empty string';
@@ -88,10 +98,12 @@ class WindowBinding {
     this.space = space;
     this.frame = frame;
   }
-  static get maximize() : Rectangle {
-    return { x: 0, y: 0, width: 100, height: 100 };
+
+  static get maximize(): Rectangle {
+    return {x: 0, y: 0, width: 100, height: 100};
   }
 }
+
 /**
  * Represents an arrangement of screens and spaces and the bindings that go with that arrangement
  */
@@ -100,7 +112,8 @@ class SpaceBinding {
   _name: string;
   _screenSpaces: number[];
   _default: WindowBinding;
-  constructor(name: string, space? : number[]) {
+
+  constructor(name: string, space?: number[]) {
     this._windowBindings = {};
     this._screenSpaces = [];
     this._name = name;
@@ -108,43 +121,56 @@ class SpaceBinding {
       this.setScreenSpaces(space);
     }
   }
-  add(windowBinding: WindowBinding) : void {
+
+  add(windowBinding: WindowBinding): void {
     this._windowBindings[windowBinding.appId] = windowBinding;
   }
+
   addNew(appId: string, screen = 0, space = 0, frame?: Rectangle) {
     this.add(new WindowBinding(appId, screen, space, frame));
   }
-  remove(appId: string) : void {
+
+  remove(appId: string): void {
     delete this._windowBindings[appId];
   }
-  match(screenSpaces) : boolean {
+
+  match(screenSpaces): boolean {
     // @ts-ignore
     return _.isEqual(screenSpaces, this._screenSpaces);
   }
-  setScreenSpaces(spaces: number[]) : void {
+
+  setScreenSpaces(spaces: number[]): void {
     this._screenSpaces = [...spaces];
   }
+
   set screenSpaces(spaces: number[]) {
     this.setScreenSpaces(spaces);
   }
-  get screenSpaces() : number[] {
+
+  get screenSpaces(): number[] {
     return [...this._screenSpaces];
   }
-  static get currentScreenSpaces() : number[] {
+
+  static get currentScreenSpaces(): number[] {
     return Screen.all().map(screenHandle => screenHandle.spaces().length);
   }
-  get name() : string {
+
+  get name(): string {
     return this._name;
   }
+
   set name(name: string) {
     this._name = name;
   }
-  windowBinding(appId: string) : WindowBinding {
+
+  windowBinding(appId: string): WindowBinding {
     return this._windowBindings[appId];
   }
+
   get defaultBinding() {
     return this._default;
   }
+
   set defaultBinding(windowBinding: WindowBinding) {
     this._default = windowBinding;
   }
@@ -156,23 +182,28 @@ class SpaceBinding {
 class BindingSet {
   _spaceBindings: { [name: string]: SpaceBinding };
   _count: number;
+
   constructor() {
     this._spaceBindings = {};
     this.add(new SpaceBinding('default'));
     this._count = 1;
   }
-  add(spaceBinding: SpaceBinding) : void {
+
+  add(spaceBinding: SpaceBinding): void {
     this._spaceBindings[spaceBinding._name] = spaceBinding;
     this._count = Object.keys(this._spaceBindings).length;
   }
-  remove(name: string) : void {
+
+  remove(name: string): void {
     delete this._spaceBindings[name];
     this._count = Object.keys(this._spaceBindings).length;
   }
-  binding(name: string) : SpaceBinding {
+
+  binding(name: string): SpaceBinding {
     return this._spaceBindings[name];
   }
-  match(screenSpaces: number[]) : string {
+
+  match(screenSpaces: number[]): string {
     for (const spaceBindingName in this._spaceBindings) {
       if (this._spaceBindings[spaceBindingName].match(screenSpaces)) {
         return spaceBindingName;
@@ -180,7 +211,8 @@ class BindingSet {
     }
     return 'default';
   }
-  getBindingSpaces() : string {
+
+  getBindingSpaces(): string {
     return _.join(
       _.map(
         this._spaceBindings,
@@ -188,10 +220,12 @@ class BindingSet {
       '\n'
     );
   }
-  get count() : number {
+
+  get count(): number {
     return this._count;
   }
 }
+
 /**
  * Uses the data encapsulated in a BindingSet to manage the active user's active windows
  */
@@ -200,6 +234,7 @@ interface WindowManagerParameters {
   logger?: Logger;
   snapToEdgeThreshold?: number;
 }
+
 interface WindowInfo {
   window: Window;
 //  screen: Screen;
@@ -207,13 +242,14 @@ interface WindowInfo {
   screenIndex: number;
   spaceIndex: number;
 }
+
 class WindowManager {
   _logger: Logger;
   _bindingSet: BindingSet;
   _snapToEdgeThreshold: number;
   _excludes: { [appId: string]: boolean };
 
-  constructor({logger, bindingSet, snapToEdgeThreshold} : WindowManagerParameters) {
+  constructor({logger, bindingSet, snapToEdgeThreshold}: WindowManagerParameters) {
     this._logger = logger || new Logger();
     this._excludes = {};
     this._bindingSet = bindingSet || new BindingSet();
@@ -221,13 +257,16 @@ class WindowManager {
     // Always exclude Phoenix itself.
     this.exclude('org.khirviko.Phoenix');
   }
-  static async getScreenSpaceLayout() : Promise<number[]> {
+
+  static async getScreenSpaceLayout(): Promise<number[]> {
     return Screen.all().map(screenHandle => screenHandle.spaces().length);
   }
-  exclude(appId: string, value = true) : void {
+
+  exclude(appId: string, value = true): void {
     this._excludes[appId] = value;
   }
-  async getActiveSpaceBindingName() : Promise<string> {
+
+  async getActiveSpaceBindingName(): Promise<string> {
     const currentLayout = await WindowManager.getScreenSpaceLayout();
     const setName = this._bindingSet.match(currentLayout);
     if (!setName || setName === "default") {
@@ -243,11 +282,11 @@ class WindowManager {
     return setName;
   }
 
-  async getActiveSpaceBinding() : Promise<SpaceBinding> {
+  async getActiveSpaceBinding(): Promise<SpaceBinding> {
     return this._bindingSet.binding(await this.getActiveSpaceBindingName());
   }
 
-  get bindingSet() : BindingSet {
+  get bindingSet(): BindingSet {
     return this._bindingSet;
   }
 
@@ -266,47 +305,41 @@ class WindowManager {
       // Window is too large to fit on new screen. Shrink to fit.
       logger.logIndent(2, `${axis}: Shrink`);
       newFrame[size] = newScreenFrame[size];
-    }
-    else if (looseEquals(windowFrame[size], oldScreenFrame[size], this._snapToEdgeThreshold)) {
+    } else if (looseEquals(windowFrame[size], oldScreenFrame[size], this._snapToEdgeThreshold)) {
       // Window was maximized. Keep window maximized
       logger.logIndent(2, `${axis}: Maximize`);
       newFrame[size] = newScreenFrame[size];
-    }
-    else if (windowStartDelta >= this._snapToEdgeThreshold && windowEndDelta <= -this._snapToEdgeThreshold) {
+    } else if (windowStartDelta >= this._snapToEdgeThreshold && windowEndDelta <= -this._snapToEdgeThreshold) {
       // Whole window was on old screen.
       // Position so the same relative amount of space is present on both sides before and after.
       logger.logIndent(2, `${axis}: Position normally`);
       const scaleZ = (newScreenFrame[size] - windowFrame[size]) / (oldScreenFrame[size] - windowFrame[size]);
       newFrame[axis] = windowStartDelta * scaleZ + newScreenFrame[axis];
-    }
-    else if (Math.abs(windowStartDelta) <= this._snapToEdgeThreshold
-          || windowEnd <= oldScreenFrame[axis]
-          || windowStartDelta < 0 && windowEndDelta < 0) {
+    } else if (Math.abs(windowStartDelta) <= this._snapToEdgeThreshold
+      || windowEnd <= oldScreenFrame[axis]
+      || windowStartDelta < 0 && windowEndDelta < 0) {
       logger.logIndent(2, `${axis}: Flush ${axes[axis].start}`);
       // Flush start, or off of the screen towards the start.
       // Make flush start (default).
-    }
-    else if (Math.abs(windowEndDelta) <= this._snapToEdgeThreshold
-          || windowFrame[axis] >= oldScreenFrameEnd
-          || windowStartDelta > 0 && windowEndDelta > 0) {
+    } else if (Math.abs(windowEndDelta) <= this._snapToEdgeThreshold
+      || windowFrame[axis] >= oldScreenFrameEnd
+      || windowStartDelta > 0 && windowEndDelta > 0) {
       // Flush end, or off of the screen towards the end. Make flush end.
       logger.logIndent(2, `${axis}: Flush ${axes[axis].end}`);
       newFrame[axis] = newScreenFrameEnd - windowFrame[size];
-    }
-    else if (windowStartDelta < 0 && windowEndDelta > 0) {
+    } else if (windowStartDelta < 0 && windowEndDelta > 0) {
       // Window overflowed old screen on both sides, but will fit on new screen.
       // Center on new screen
       newFrame[axis] = newScreenFrame[axis] + (newScreenFrame[size] - windowFrame[size]) / 2.0;
       logger.logIndent(2, `${axis}: Overflow`);
-    }
-    else {
+    } else {
       Phoenix.log(`Error: Could not determine placement of window on ${axis} axis! Defaulting to origin.`);
     }
   }
 
   async reframe(windowFrame: Rectangle, oldScreenFrame: Rectangle, newScreenFrame: Rectangle) {
     const logger = this._logger;
-    const newFrame : Rectangle = { x: 0, y: 0, width: 0, height: 0 };
+    const newFrame: Rectangle = {x: 0, y: 0, width: 0, height: 0};
     logger.logIndent(2, `Old screen: left: ${oldScreenFrame.x}, top: ${oldScreenFrame.y}, right: ${oldScreenFrame.x + oldScreenFrame.width}, bottom: ${oldScreenFrame.y + oldScreenFrame.height}`);
     logger.logIndent(2, `New screen: left: ${newScreenFrame.x}, top: ${newScreenFrame.y}, right: ${newScreenFrame.x + newScreenFrame.width}, bottom: ${newScreenFrame.y + newScreenFrame.height}`);
     logger.logIndent(2, `Old window: left: ${windowFrame.x}, top: ${windowFrame.y}, right: ${windowFrame.x + windowFrame.width}, bottom: ${windowFrame.y + windowFrame.height}`);
@@ -318,7 +351,7 @@ class WindowManager {
     return newFrame;
   }
 
-  async resizeWindow(windowHandle: Window, fromScreenHandle: Screen, toScreenHandle: Screen, frame: Rectangle) : Promise<boolean> {
+  async resizeWindow(windowHandle: Window, fromScreenHandle: Screen, toScreenHandle: Screen, frame: Rectangle): Promise<boolean> {
     const toScreenFrame = toScreenHandle.flippedVisibleFrame();
     const fromScreenFrame = fromScreenHandle.flippedVisibleFrame();
     const oldWindowFrame = windowHandle.frame();
@@ -328,10 +361,9 @@ class WindowManager {
       const y = toScreenFrame.y + toScreenFrame.height * (frame.y / 100);
       const width = toScreenFrame.width * (frame.width / 100);
       const height = toScreenFrame.height * (frame.height / 100);
-      newWindowFrame = { x, y, width, height };
-    }
-    else {
-       newWindowFrame = await this.reframe(oldWindowFrame, fromScreenFrame, toScreenFrame);
+      newWindowFrame = {x, y, width, height};
+    } else {
+      newWindowFrame = await this.reframe(oldWindowFrame, fromScreenFrame, toScreenFrame);
     }
 
     const appIdentifier = windowHandle.app().bundleIdentifier();
@@ -339,8 +371,7 @@ class WindowManager {
     if (_.every(newWindowFrame, (value, key) => looseEquals(value, oldWindowFrame[key], 0.01))) {
       this._logger.logIndent(2, `New frame is same as old frame, not changing ${appIdentifier}.`);
       return false;
-    }
-    else {
+    } else {
       if (frame) {
         this._logger.logIndent(2, `Resizing ${appIdentifier} to user-specified dimensions. Old frame: x ${oldWindowFrame.x}, y ${oldWindowFrame.y}, width ${oldWindowFrame.width}, height ${oldWindowFrame.height}. New frame: x ${newWindowFrame.x}, y ${newWindowFrame.y}, width ${newWindowFrame.width}, height ${newWindowFrame.height}.`);
       }
@@ -354,7 +385,7 @@ class WindowManager {
     toSpace.addWindows([windowHandle]);
   }
 
-  static launchModal(text: string, duration: number, frame: Rectangle) : Modal {
+  static launchModal(text: string, duration: number, frame: Rectangle): Modal {
     logger.log(`Launching modal: ${text}`);
     const modal = Modal.build({
       text,
@@ -366,7 +397,7 @@ class WindowManager {
     return modal;
   }
 
-  static async buildWindowList(spaces: Space[], screenIndex: number) : Promise<WindowInfo[]> {
+  static async buildWindowList(spaces: Space[], screenIndex: number): Promise<WindowInfo[]> {
     const results = [];
     spaces.forEach((space, spaceIndex) => {
       results.push(
@@ -378,11 +409,11 @@ class WindowManager {
     return results;
   }
 
-  static getSpaces() : Space[][] {
+  static getSpaces(): Space[][] {
     return Screen.all().map(screen => screen.spaces());
   }
 
-  getWindowBinding(window: Window, spaceBinding: SpaceBinding) : WindowBinding {
+  getWindowBinding(window: Window, spaceBinding: SpaceBinding): WindowBinding {
     const appId = window.app().bundleIdentifier();
     if (this._excludes[appId]) {
       return null;
@@ -400,8 +431,7 @@ class WindowManager {
     let spaceBinding: SpaceBinding;
     try {
       spaceBinding = await this.getActiveSpaceBinding();
-    }
-    catch (e) {
+    } catch (e) {
       logger.log(e);
       return;
     }
@@ -410,7 +440,7 @@ class WindowManager {
     const movingWindows = await later(100, WindowManager.launchModal('Moving windows...',
       10, // Should be closed automatically at the end of moveBoundWindows, setting duration just in case it's not
       currentScreenFrame
-      ));
+    ));
     const spaces = WindowManager.getSpaces();
     const screens = Screen.all();
 
@@ -436,8 +466,7 @@ class WindowManager {
             binding.frame
           );
           return 1;
-        }
-        else if (binding.frame) {
+        } else if (binding.frame) {
           return (await this.resizeWindow(windowInfo.window, oldScreen, oldScreen, binding.frame)) ? 1 : 0;
         }
       }
@@ -450,7 +479,7 @@ class WindowManager {
     WindowManager.launchModal(
       `Moved ${count} window${count === 1 ? '' : 's'}`,
       // display for no less than 2 but no more than 6 seconds, increasing by 0.5 seconds per window moved
-      _.max([2, _.min([6, count/2.0])]),
+      _.max([2, _.min([6, count / 2.0])]),
       currentScreenFrame
     );
   }
@@ -459,7 +488,7 @@ class WindowManager {
 function enumerateAppWindows(logger: Logger) {
   logger.log('Retrieving screens');
   const screenHandles = Screen.all();
-  const screens = { null: 'null' };
+  const screens = {null: 'null'};
   screenHandles.forEach((screenHandle, index) => {
     screens[screenHandle.identifier()] = index;
     logger.logIndent(1, `screen ${index} = screenID "${screenHandle.identifier()}"`);
@@ -482,8 +511,7 @@ function enumerateAppWindows(logger: Logger) {
           const width = 100 * windowFrame.width / screenFrame.width;
           const height = 100 * windowFrame.height / screenFrame.height;
           logger.logIndent(2, `screen: ${screens[screenId]}, window: "${windowHandle.title()}" x: ${x}, y: ${y}, width: ${width}, height: ${height}.`);
-        }
-        else {
+        } else {
           logger.logIndent(2, `windowHandle "${windowHandle.title()}" has no screenHandle.`);
         }
       });
@@ -491,7 +519,7 @@ function enumerateAppWindows(logger: Logger) {
   });
 }
 
-function later<T>(milliseconds: number, value?: T) : Promise<T> {
+function later<T>(milliseconds: number, value?: T): Promise<T> {
   return new Promise(resolve => setTimeout(resolve.bind(null, value), milliseconds));
 }
 
@@ -508,8 +536,8 @@ const windowManager = new WindowManager({logger, snapToEdgeThreshold});
 
 // Key bindings
 
-const enumerateKey = new Key('x', [ 'ctrl', 'shift', 'alt' ], () => enumerateAppWindows(logger));
-const moveKey = new Key('z', [ 'ctrl', 'shift', 'alt' ], windowManager.moveBoundWindows.bind(windowManager));
+const enumerateKey = new Key('x', ['ctrl', 'shift', 'alt'], () => enumerateAppWindows(logger));
+const moveKey = new Key('z', ['ctrl', 'shift', 'alt'], windowManager.moveBoundWindows.bind(windowManager));
 
 // Window bindings
 
@@ -533,9 +561,9 @@ const workLaptop = 1;
 const workCenter = 0;
 const workRight = 2;
 
-const slack: Rectangle = { x: 0, y: 0, width: 85, height: 85 };
-const notes: Rectangle = { x: 40, y: 10, width: 60, height: 90 };
-const ical: Rectangle = { x: 0, y: 25, width: 70, height: 75 };
+const slack: Rectangle = {x: 0, y: 0, width: 85, height: 85};
+const notes: Rectangle = {x: 40, y: 10, width: 60, height: 90};
+const ical: Rectangle = {x: 0, y: 25, width: 70, height: 75};
 //bind('workDocked', 'google-play-music-desktop-player', 0, 0);
 //bind('workDocked', 'com.apple.ActivityMonitor', 0, 0);
 

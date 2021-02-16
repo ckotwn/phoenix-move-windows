@@ -4,3 +4,5 @@ tsc.log
 typings
 decl
 lib
+.DS_Store
+.idea/
