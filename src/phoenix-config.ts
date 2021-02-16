@@ -539,6 +539,9 @@ const windowManager = new WindowManager({logger, snapToEdgeThreshold});
 const enumerateKey = new Key('l', ['ctrl', 'cmd', 'alt'], () => enumerateAppWindows(logger));
 const moveKey = new Key('m', ['ctrl', 'cmd', 'alt'], windowManager.moveBoundWindows.bind(windowManager));
 
+// Event bindings
+let plugScreen = new Event('screensDidChange', windowManager.moveBoundWindows.bind(windowManager));
+
 // Screens
 const monitors: Monitor[] = [
   {
