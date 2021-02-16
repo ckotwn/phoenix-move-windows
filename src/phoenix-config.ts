@@ -545,7 +545,7 @@ let plugScreen = new Event('screensDidChange', windowManager.moveBoundWindows.bi
 // Screens
 const monitors: Monitor[] = [
   {
-    name: 'screenProXDR',
+    name: 'screenExtMain',
     screenId: "6A5F1E1C-C366-140A-0D3C-EF79946BBA2F",
     frame: {"x": 0, "y": 0, "width": 3008, "height": 1692}
   },
@@ -562,55 +562,62 @@ const appsSettings = [
     name: 'Slack',
     id: 'com.tinyspeck.slackmacgap',
     screenBuiltIn: {x: 48.111979166666664, y: 21.666666666666668, width: 50.390625, height: 75.41666666666667},
-    screenProXDR: {x: 59.50797872340426, y: 8.747753145596166, width: 36.170212765957444, height: 49.19113241461953}
+    screenExtMain: {x: 59.50797872340426, y: 8.747753145596166, width: 36.170212765957444, height: 49.19113241461953}
   },
   {
     name: 'TextMate',
     id: 'com.macromates.TextMate',
     screenBuiltIn: {x: 0, y: 0, width: 100 / 2, height: 100},
-    screenProXDR: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
+    screenExtMain: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
   },
   {
     name: 'WebStorm',
     id: 'com.jetbrains.WebStorm',
     screenBuiltIn: {x: 0, y: 0, width: 100, height: 100},
-    screenProXDR: {x: 25, y: 0, width: 50, height: 100}
+    screenExtMain: {x: 25, y: 0, width: 50, height: 100}
   },
   {
     name: 'DataGrip',
     id: 'com.jetbrains.datagrip',
     screenBuiltIn: {x: 0, y: 0, width: 100, height: 100},
-    screenProXDR: {x: 0, y: 0, width: 50, height: 100}
+    screenExtMain: {x: 0, y: 0, width: 50, height: 100}
   },
   {
     name: 'iTerm2',
     id: 'com.googlecode.iterm2',
     screenBuiltIn: {x: 100 / 2, y: 0, width: 100 / 2, height: 100},
-    screenProXDR: {x: 100 / 3, y: 0, width: 100 / 3, height: 100}
+    screenExtMain: {x: 100 / 3, y: 0, width: 100 / 3, height: 100}
   },
   {
     name: 'Firefox',
     id: 'org.mozilla.firefox',
     screenBuiltIn: {x: 0, y: 0, width: 200 / 3, height: 100},
-    screenProXDR: {x: 0, y: 0, width: 50, height: 100}
+    screenExtMain: {x: 0, y: 0, width: 50, height: 100}
   },
   {
     name: 'Safari',
     id: 'com.apple.Safari',
     screenBuiltIn: {x: 0, y: 0, width: 50, height: 100},
-    screenProXDR: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
+    screenExtMain: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
+  },
+  {
+    name: 'Calendar',
+    id: 'com.apple.iCal',
+    preferred: 'screenBuiltIn',
+    screenBuiltIn: {x: 0, y: 0, width: 100, height: 100},
+    screenExtMain: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
   },
   {
     name: 'Console',
     id: 'com.apple.Console',
     screenBuiltIn: {x: 200/3, y: 0, width: 100/3, height: 100},
-    screenProXDR: {x: 200/3, y: 0, width: 100/3, height: 100}
+    screenExtMain: {x: 200/3, y: 0, width: 100/3, height: 100}
   },
   {
     name: 'Dash',
     id: 'com.kapeli.dashdoc',
     screenBuiltIn: {x: 200/3, y: 0, width: 100/3, height: 100},
-    screenProXDR: {x: 200/3, y: 0, width: 100/3, height: 100}
+    screenExtMain: {x: 200/3, y: 0, width: 100/3, height: 100}
   }
 ];
 
@@ -626,16 +633,28 @@ const appsSettings = [
 // If the default binding for a bindingSet is set, all windows that don't match another binding
 //   will be moved to that screen
 
-let mbp = new SpaceBinding('MBP only', [1])
-windowManager.bindingSet.add(mbp);
-mbp.defaultBinding = new WindowBinding('*', 0, 0);
+let lpt = new SpaceBinding('Laptop only', [1])
+windowManager.bindingSet.add(lpt);
+lpt.defaultBinding = new WindowBinding('*', 0, 0);
 appsSettings.forEach(app => {
-  mbp.addNew(app.id, 0, 0, app.screenBuiltIn);
+  lpt.addNew(app.id, 0, 0, app.screenBuiltIn);
 });
 
-let mbpWProDisplay = new SpaceBinding('MBP with Pro Display XDR', [1, 1]);
-windowManager.bindingSet.add(mbpWProDisplay);
-mbpWProDisplay.defaultBinding = new WindowBinding('*', 0, 0);
+let lptExtMain = new SpaceBinding('LPT with external main display', [1, 1]);
+windowManager.bindingSet.add(lptExtMain);
+lptExtMain.defaultBinding = new WindowBinding('*', 0, 0);
 appsSettings.forEach(app => {
-  mbpWProDisplay.addNew(app.id, 0, 0, app.screenProXDR);
+  if (app.preferred) {
+    let screenHandles = Screen.all();
+    let prefMonitor = monitors.find(item => { return item.name === app.preferred });
+    // Match the preferred screenId and assign the index for the app.
+    screenHandles.forEach((screenHandle, index) => {
+      if (screenHandle.identifier() === prefMonitor.screenId) {
+        lptExtMain.addNew(app.id, index, 0, app[app.preferred]);
+        logger.log(`App "${app.name}" prefers screen "${app.preferred}" with index "${index}"`);
+      }
+    });
+  } else {
+    lptExtMain.addNew(app.id, 0, 0, app.screenExtMain);
+  }
 });
