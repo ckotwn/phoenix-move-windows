@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
@@ -14,13 +13,23 @@
     "@types/lodash": "^4.14.149",
     "path": "^0.12.7",
     "ts-loader": "^6.2.2",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.6",
+    "watch": "^1.0.2"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts"
+    }
   },
   "scripts": {
+    "watch": "npm-watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
-    "build": "npm run build:types && npm run build:js",
+    "build": "npm run build:types && npm run build:js && cp lib/phoenix-config.js ~/.phoenix.js",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\""
   },
@@ -29,5 +38,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/Mooninaut/phoenix-move-windows.git"
+  },
+  "dependencies": {
+    "npm-watch": "^0.7.0"
   }
 }
