@@ -355,7 +355,7 @@ class WindowManager {
     const toScreenFrame = toScreenHandle.flippedVisibleFrame();
     const fromScreenFrame = fromScreenHandle.flippedVisibleFrame();
     const oldWindowFrame = windowHandle.frame();
-    var newWindowFrame: Rectangle;
+    let newWindowFrame: Rectangle;
     if (frame) {
       const x = toScreenFrame.x + toScreenFrame.width * (frame.x / 100);
       const y = toScreenFrame.y + toScreenFrame.height * (frame.y / 100);
@@ -526,7 +526,7 @@ function later<T>(milliseconds: number, value?: T): Promise<T> {
 // Preferences
 
 const loggingEnabled = true;
-const loggingIndent = 4; // spaces
+const loggingIndent = 2; // spaces
 const snapToEdgeThreshold = 0.01; // fractional difference
 
 // Initialization
@@ -536,8 +536,80 @@ const windowManager = new WindowManager({logger, snapToEdgeThreshold});
 
 // Key bindings
 
-const enumerateKey = new Key('x', ['ctrl', 'shift', 'alt'], () => enumerateAppWindows(logger));
-const moveKey = new Key('z', ['ctrl', 'shift', 'alt'], windowManager.moveBoundWindows.bind(windowManager));
+const enumerateKey = new Key('l', ['ctrl', 'cmd', 'alt'], () => enumerateAppWindows(logger));
+const moveKey = new Key('m', ['ctrl', 'cmd', 'alt'], windowManager.moveBoundWindows.bind(windowManager));
+
+// Screens
+const monitors: Monitor[] = [
+  {
+    name: 'screenProXDR',
+    screenId: "6A5F1E1C-C366-140A-0D3C-EF79946BBA2F",
+    frame: {"x": 0, "y": 0, "width": 3008, "height": 1692}
+  },
+  {
+    name: 'screenBuiltIn',
+    screenId: "6CE794D8-FAF3-2AF6-D16A-477FDADB46D6",
+    frame: {"x": 3008, "y": 471, "width": 1536, "height": 960}
+  }
+];
+
+// Apps' settings
+const appsSettings = [
+  {
+    name: 'Slack',
+    id: 'com.tinyspeck.slackmacgap',
+    screenBuiltIn: {x: 48.111979166666664, y: 21.666666666666668, width: 50.390625, height: 75.41666666666667},
+    screenProXDR: {x: 59.50797872340426, y: 8.747753145596166, width: 36.170212765957444, height: 49.19113241461953}
+  },
+  {
+    name: 'TextMate',
+    id: 'com.macromates.TextMate',
+    screenBuiltIn: {x: 0, y: 0, width: 100 / 2, height: 100},
+    screenProXDR: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
+  },
+  {
+    name: 'WebStorm',
+    id: 'com.jetbrains.WebStorm',
+    screenBuiltIn: {x: 0, y: 0, width: 100, height: 100},
+    screenProXDR: {x: 25, y: 0, width: 50, height: 100}
+  },
+  {
+    name: 'DataGrip',
+    id: 'com.jetbrains.datagrip',
+    screenBuiltIn: {x: 0, y: 0, width: 100, height: 100},
+    screenProXDR: {x: 0, y: 0, width: 50, height: 100}
+  },
+  {
+    name: 'iTerm2',
+    id: 'com.googlecode.iterm2',
+    screenBuiltIn: {x: 100 / 2, y: 0, width: 100 / 2, height: 100},
+    screenProXDR: {x: 100 / 3, y: 0, width: 100 / 3, height: 100}
+  },
+  {
+    name: 'Firefox',
+    id: 'org.mozilla.firefox',
+    screenBuiltIn: {x: 0, y: 0, width: 200 / 3, height: 100},
+    screenProXDR: {x: 0, y: 0, width: 50, height: 100}
+  },
+  {
+    name: 'Safari',
+    id: 'com.apple.Safari',
+    screenBuiltIn: {x: 0, y: 0, width: 50, height: 100},
+    screenProXDR: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
+  },
+  {
+    name: 'Console',
+    id: 'com.apple.Console',
+    screenBuiltIn: {x: 200/3, y: 0, width: 100/3, height: 100},
+    screenProXDR: {x: 200/3, y: 0, width: 100/3, height: 100}
+  },
+  {
+    name: 'Dash',
+    id: 'com.kapeli.dashdoc',
+    screenBuiltIn: {x: 200/3, y: 0, width: 100/3, height: 100},
+    screenProXDR: {x: 200/3, y: 0, width: 100/3, height: 100}
+  }
+];
 
 // Window bindings
 
@@ -551,104 +623,16 @@ const moveKey = new Key('z', ['ctrl', 'shift', 'alt'], windowManager.moveBoundWi
 // If the default binding for a bindingSet is set, all windows that don't match another binding
 //   will be moved to that screen
 
-windowManager.exclude('net.antelle.keeweb'); // on all spaces of primary screen
-windowManager.exclude('org.keepassx.keepassxc'); // on all spaces of primary screen
+let mbp = new SpaceBinding('MBP only', [1])
+windowManager.bindingSet.add(mbp);
+mbp.defaultBinding = new WindowBinding('*', 0, 0);
+appsSettings.forEach(app => {
+  mbp.addNew(app.id, 0, 0, app.screenBuiltIn);
+});
 
-const workDocked = new SpaceBinding('workDocked', [1, 2, 3]);
-windowManager.bindingSet.add(workDocked);
-
-const workLaptop = 1;
-const workCenter = 0;
-const workRight = 2;
-
-const slack: Rectangle = {x: 0, y: 0, width: 85, height: 85};
-const notes: Rectangle = {x: 40, y: 10, width: 60, height: 90};
-const ical: Rectangle = {x: 0, y: 25, width: 70, height: 75};
-//bind('workDocked', 'google-play-music-desktop-player', 0, 0);
-//bind('workDocked', 'com.apple.ActivityMonitor', 0, 0);
-
-
-// Laptop
-workDocked.addNew('org.mozilla.firefox', workLaptop, 0, WindowBinding.maximize);
-
-workDocked.addNew('com.tinyspeck.slackmacgap', workLaptop, 1, slack);
-workDocked.addNew('com.apple.Notes', workLaptop, 1, notes);
-workDocked.addNew('com.apple.iCal', workLaptop, 1, ical);
-
-// Center screen
-workDocked.defaultBinding = new WindowBinding('*', workCenter, 0);
-
-
-// Right screen
-workDocked.addNew('com.postmanlabs.mac', workRight, 0);
-workDocked.addNew('com.TechSmith.Snagit2018', workRight, 0);
-workDocked.addNew('org.freeplane.core', workRight, 0);
-
-workDocked.addNew('com.googlecode.iterm2', workRight, 1, WindowBinding.maximize);
-
-
-////// Tall IntelliJ for Java development //////
-
-// laptop[2], vertical screen[2], horizontal screen[2]
-
-const workJava = new SpaceBinding('workJava', [2, 2, 2]);
-windowManager.bindingSet.add(workJava);
-
-// Laptop
-workJava.addNew('org.mozilla.firefox', workLaptop, 0, WindowBinding.maximize);
-
-workJava.addNew('com.tinyspeck.slackmacgap', workLaptop, 1, slack);
-workJava.addNew('com.apple.Notes', workLaptop, 1, notes);
-workJava.addNew('com.apple.iCal', workLaptop, 1, ical);
-
-// Vertical screen
-workJava.defaultBinding = new WindowBinding('*', workCenter, 0);
-
-workJava.addNew('com.jetbrains.intellij.ce', workCenter, 1, WindowBinding.maximize);
-
-// Horizontal screen
-workJava.addNew('com.postmanlabs.mac', workRight, 0);
-workJava.addNew('com.TechSmith.Snagit2018', workRight, 0);
-workJava.addNew('org.freeplane.core', workRight, 0);
-
-workJava.addNew('com.googlecode.iterm2', workRight, 1, WindowBinding.maximize);
-
-////// Laptop alone (1, 2, 3, 4) //////
-
-const undocked = new SpaceBinding('undocked', [4]);
-windowManager.bindingSet.add(undocked);
-
-// Space 1
-undocked.addNew('com.tinyspeck.slackmacgap', 0, 0, slack);
-undocked.addNew('com.apple.Notes', 0, 0, notes);
-undocked.addNew('com.apple.iCal', 0, 0, ical);
-
-// Space 2
-undocked.addNew('org.mozilla.firefox', 0, 1, WindowBinding.maximize);
-
-// Space 3
-undocked.defaultBinding = new WindowBinding('*', 0, 2);
-
-// Space 4
-undocked.addNew('com.googlecode.iterm2', 0, 3, {x: 0, y: 0, width: 92, height: 100});
-undocked.addNew('com.jetbrains.intellij.ce', 0, 3, {x: 8, y: 0, width: 92, height: 100});
-
-const homeDocked = new SpaceBinding('homeDocked', [2, 3]);
-
-windowManager.bindingSet.add(homeDocked);
-
-// arrangement is laptop[0], monitor[1]
-// monitor: [Everything else] [iTerm2] [IDEA]
-// laptop: [Slack, Calendar, Notes] [Firefox]
-
-homeDocked.addNew('com.jetbrains.intellij.ce', 1, 2, WindowBinding.maximize);
-
-homeDocked.addNew('com.googlecode.iterm2', 1, 1, WindowBinding.maximize);
-
-homeDocked.addNew('org.mozilla.firefox', 0, 1, WindowBinding.maximize);
-
-homeDocked.defaultBinding = new WindowBinding('*', 1, 0);
-
-homeDocked.addNew('com.tinyspeck.slackmacgap', 0, 0, slack);
-homeDocked.addNew('com.apple.Notes', 0, 0, notes);
-homeDocked.addNew('com.apple.iCal', 0, 0, ical);
+let mbpWProDisplay = new SpaceBinding('MBP with Pro Display XDR', [1, 1]);
+windowManager.bindingSet.add(mbpWProDisplay);
+mbpWProDisplay.defaultBinding = new WindowBinding('*', 0, 0);
+appsSettings.forEach(app => {
+  mbpWProDisplay.addNew(app.id, 0, 0, app.screenProXDR);
+});
