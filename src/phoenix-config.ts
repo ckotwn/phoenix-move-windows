@@ -601,11 +601,31 @@ const appsSettings = [
     screenExtMain: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
   },
   {
+    name: 'Numbers',
+    id: 'com.apple.iWork.Numbers',
+    screenBuiltIn: {x: 0, y: 100 / 3, width: 200 / 3, height: 100},
+    screenExtMain: {x: 50, y: 0, width: 50, height: 100}
+  },
+  {
     name: 'Calendar',
     id: 'com.apple.iCal',
     preferred: 'screenBuiltIn',
     screenBuiltIn: {x: 0, y: 0, width: 100, height: 100},
     screenExtMain: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
+  },
+  {
+    name: 'LINE',
+    id: 'jp.naver.line.mac',
+    preferred: 'screenBuiltIn',
+    screenBuiltIn: {x: 71.2890625, y: 6.354166666666667, width: 24.609375, height: 62.5},
+    screenExtMain: {x: 81.68218085106383, y: 8.987417615338526, width: 12.566489361702128, height: 35.9496704613541}
+  },
+  {
+    name: 'LDOCE5 Viewer',
+    id: 'org.pythonmac.unspecified.LDOCE5Viewer',
+    preferred: 'screenBuiltIn',
+    screenBuiltIn: {x: 49.8046875, y: 5.520833333333333, width: 47.916666666666664, height: 58.4375},
+    screenExtMain: {x: 81.68218085106383, y: 8.987417615338526, width: 12.566489361702128, height: 35.9496704613541}
   },
   {
     name: 'Console',
