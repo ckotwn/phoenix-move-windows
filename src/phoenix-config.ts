@@ -634,10 +634,22 @@ const appsSettings = [
     screenExtMain: {x: 200/3, y: 0, width: 100/3, height: 100}
   },
   {
-    name: 'Dash',
-    id: 'com.kapeli.dashdoc',
+    name: 'Postbox',
+    id: 'com.postbox-inc.postbox',
     screenBuiltIn: {x: 200/3, y: 0, width: 100/3, height: 100},
     screenExtMain: {x: 200/3, y: 0, width: 100/3, height: 100}
+  },
+  {
+    name: 'PDF Expert',
+    id: 'com.readdle.PDFExpert-Mac',
+    screenBuiltIn: {x: 100/3, y: 0, width: 200/3, height: 100},
+    screenExtMain: {x: 50, y: 0, width: 50, height: 100}
+  },
+  {
+    name: 'Dash',
+    id: 'com.kapeli.dashdoc',
+    screenBuiltIn: {x: 50, y: 0, width: 500, height: 100},
+    screenExtMain: {x: 100/3, y: 0, width: 200/3, height: 100}
   }
 ];
 
