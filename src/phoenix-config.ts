@@ -664,7 +664,10 @@ const appsExcluded = [
   'com.apple.Dictionary',
   'com.apple.audio.AudioMIDISetup',
   'com.abhishek.Clocker',
-  'com.apple.finder'
+  'com.apple.finder',
+  'com.currencier.macapp',
+  'com.jetbrains.pycharm',
+  'com.surteesstudios.Bartender'
 ];
 
 // Window bindings
