@@ -562,7 +562,12 @@ const appsSettings = [
     name: 'Slack',
     id: 'com.tinyspeck.slackmacgap',
     screenBuiltIn: {x: 48.111979166666664, y: 21.666666666666668, width: 50.390625, height: 75.41666666666667},
-    screenExtMain: {x: 59.50797872340426, y: 8.747753145596166, width: 36.170212765957444, height: 49.19113241461953}
+    screenExtMain: {
+      x: 59.50797872340426,
+      y: 8.747753145596166,
+      width: 36.170212765957444,
+      height: 49.19113241461953
+    }
   },
   {
     name: 'TextMate',
@@ -630,27 +635,36 @@ const appsSettings = [
   {
     name: 'Console',
     id: 'com.apple.Console',
-    screenBuiltIn: {x: 200/3, y: 0, width: 100/3, height: 100},
-    screenExtMain: {x: 200/3, y: 0, width: 100/3, height: 100}
+    screenBuiltIn: {x: 200 / 3, y: 0, width: 100 / 3, height: 100},
+    screenExtMain: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
   },
   {
     name: 'Postbox',
     id: 'com.postbox-inc.postbox',
-    screenBuiltIn: {x: 200/3, y: 0, width: 100/3, height: 100},
-    screenExtMain: {x: 200/3, y: 0, width: 100/3, height: 100}
+    screenBuiltIn: {x: 200 / 3, y: 0, width: 100 / 3, height: 100},
+    screenExtMain: {x: 200 / 3, y: 0, width: 100 / 3, height: 100}
   },
   {
     name: 'PDF Expert',
     id: 'com.readdle.PDFExpert-Mac',
-    screenBuiltIn: {x: 100/3, y: 0, width: 200/3, height: 100},
+    screenBuiltIn: {x: 100 / 3, y: 0, width: 200 / 3, height: 100},
     screenExtMain: {x: 50, y: 0, width: 50, height: 100}
   },
   {
     name: 'Dash',
     id: 'com.kapeli.dashdoc',
     screenBuiltIn: {x: 50, y: 0, width: 500, height: 100},
-    screenExtMain: {x: 100/3, y: 0, width: 200/3, height: 100}
+    screenExtMain: {x: 100 / 3, y: 0, width: 200 / 3, height: 100}
   }
+];
+
+// Excluded apps.
+const appsExcluded = [
+  'com.tidal.desktop',
+  'com.apple.Dictionary',
+  'com.apple.audio.AudioMIDISetup',
+  'com.abhishek.Clocker',
+  'com.apple.finder'
 ];
 
 // Window bindings
@@ -665,6 +679,10 @@ const appsSettings = [
 // If the default binding for a bindingSet is set, all windows that don't match another binding
 //   will be moved to that screen
 
+appsExcluded.forEach(appId => {
+  windowManager.exclude(appId);
+});
+
 let lpt = new SpaceBinding('Laptop only', [1])
 windowManager.bindingSet.add(lpt);
 lpt.defaultBinding = new WindowBinding('*', 0, 0);
@@ -678,7 +696,9 @@ lptExtMain.defaultBinding = new WindowBinding('*', 0, 0);
 appsSettings.forEach(app => {
   if (app.preferred) {
     let screenHandles = Screen.all();
-    let prefMonitor = monitors.find(item => { return item.name === app.preferred });
+    let prefMonitor = monitors.find(item => {
+      return item.name === app.preferred;
+    });
     // Match the preferred screenId and assign the index for the app.
     screenHandles.forEach((screenHandle, index) => {
       if (screenHandle.identifier() === prefMonitor.screenId) {
