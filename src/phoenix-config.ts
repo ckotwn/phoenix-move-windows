@@ -667,7 +667,8 @@ const appsExcluded = [
   'com.apple.finder',
   'com.currencier.macapp',
   'com.jetbrains.pycharm',
-  'com.surteesstudios.Bartender'
+  'com.surteesstudios.Bartender',
+  'com.install4j.9968-4488-2169-7623.18'
 ];
 
 // Window bindings
