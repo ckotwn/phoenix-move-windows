@@ -668,7 +668,14 @@ const appsExcluded = [
   'com.currencier.macapp',
   'com.jetbrains.pycharm',
   'com.surteesstudios.Bartender',
-  'com.install4j.9968-4488-2169-7623.18'
+  'com.install4j.9968-4488-2169-7623.18',
+  'com.agilebits.onepassword7',
+  'com.apple.iChat',
+  'com.culturedcode.ThingsMac',
+  'com.mortenjust.flotato',
+  'com.amazon.Kindle',
+  'com.apple.AddressBook',
+  'com.apple.Notes'
 ];
 
 // Window bindings
