@@ -675,7 +675,9 @@ const appsExcluded = [
   'com.mortenjust.flotato',
   'com.amazon.Kindle',
   'com.apple.AddressBook',
-  'com.apple.Notes'
+  'com.apple.Notes',
+  'com.bluesound.bluos',
+  'jp.naver.line.mac'
 ];
 
 // Window bindings
