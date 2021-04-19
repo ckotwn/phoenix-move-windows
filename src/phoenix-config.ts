@@ -677,7 +677,7 @@ const appsExcluded = [
   'com.apple.AddressBook',
   'com.apple.Notes',
   'com.bluesound.bluos',
-  'jp.naver.line.mac'
+  'com.facebook.archon.developerID'
 ];
 
 // Window bindings
